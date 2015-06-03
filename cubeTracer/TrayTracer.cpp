@@ -1,6 +1,16 @@
 #include "TrayTracer.h"
 
 #include <algorithm>
+
+static QVector3D reflect(QVector3D dir,QVector3D normal)
+{
+    auto reflectDirFactor =2 * QVector3D::dotProduct (normal,dir);
+    auto tmp = normal;
+    tmp *= reflectDirFactor;
+    auto reflectDir = dir - tmp;
+    return reflectDir;
+}
+
 TrayTracer::TrayTracer(int width, int height, Tcamera *camera, Tscene *scene)
     :m_bufferWidth(width),m_bufferHeight(height),m_camera(camera),m_scene(scene)
 {
@@ -121,7 +131,7 @@ Tcolor TrayTracer::handleDepth(Tray ray)
 
 Tcolor TrayTracer::handleNaive(Tray ray)
 {
-    return handleNaiveRecursive(ray,3);
+    return handleNaiveRecursive(ray,1);
 }
 
 Tcolor TrayTracer::handleNormal(Tray ray)
@@ -145,32 +155,46 @@ Tcolor TrayTracer::handleNaiveRecursive(Tray ray,int reflectLevel)
         auto material = result.geometry ()->material ();
         if(!material) return finalColor;
 
+        //emission
+        Tcolor emissionColor = material->sampleDiffuseTexture () * material->emission ();
         //diffuse
         Tcolor diffuseColor(0,0,0);
+        //specular
+        Tcolor reflectColor;
         auto allLights = scene()->getLightList();
         for(int i =0;i<allLights.size ();i++)
         {
             TbaseLight * light = allLights[i];
-            auto irradiance = light->getIrradiance (result.pos (),result.normal (),scene());
-            diffuseColor = diffuseColor +(material->diffuseColor () *material->sampleTexture (ray,result.pos (),result.normal ())).modulate (material->diffuse () * irradiance);
+            //we won't calculate invisible light.
+            if(!light->isVisible (result.pos (),scene())) continue;
+            //get the irradiance from the light.
+            auto lightIrradiance = light->getIrradiance (result.pos (),result.normal (),scene());
+
+            //diffuse radiance from the light.
+            //get the diffuse texture color
+            auto diffuseTextureColor = material->sampleDiffuseTexture (ray,result.pos (),result.normal ());
+            //diffuse color.
+            diffuseColor +=diffuseTextureColor*material->diffuse () * lightIrradiance;
+
+            //specular radiance from the light.
+            auto half = (light->getDir (result.pos ()) + ray.direction ())/((light->getDir (result.pos ()) + ray.direction ())).length ();
+            auto specFactor = pow(QVector3D::dotProduct (half,result.normal ()),2);
+            reflectColor += lightIrradiance*material->reflectiveness () * specFactor;
         }
 
+        //ideal specular radiance from other object.
 
-        //specular
-
-        //reflect
-        Tcolor reflectColor;
-        if(material->reflectiveness () > 0 && reflectLevel > 0)
+     if(material->reflectiveness () > 0 && reflectLevel > 0)
         {
-            // get the reflect
-            auto reflectDirFactor =2 * QVector3D::dotProduct (result.normal (),ray.direction ());
-            auto tmp = result.normal ();
-            tmp *= reflectDirFactor;
-            auto reflectDir = ray.direction () - tmp;
-            auto reflectRay = Tray(result.pos (),reflectDir);
-            reflectColor = handleNaiveRecursive(reflectRay,reflectLevel - 1).modulate (material->reflectiveness ());
+            // get the ideal specular ray.
+            auto reflectVec = reflect(ray.direction (),result.normal ());
+            auto reflectRay = Tray(result.pos (),reflectVec);
+            //get ideal specular ray irradiance.
+            auto idealSpecularRadiance = handleNaiveRecursive(reflectRay,reflectLevel - 1);
+            reflectColor +=idealSpecularRadiance .modulate (material->reflectiveness ());
         }
-        finalColor = diffuseColor + reflectColor;
+
+        finalColor = emissionColor + diffuseColor + reflectColor;
     }
     return finalColor;
 }

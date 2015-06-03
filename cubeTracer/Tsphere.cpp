@@ -1,5 +1,6 @@
 #include "Tsphere.h"
 #include <math.h>
+#include "Tscene.h"
 Tsphere::Tsphere(float radius, QVector3D center)
     :m_radius(radius),m_center(center)
 {
@@ -51,6 +52,36 @@ TintersectionResult Tsphere::getIntersect(const Tray &ray)
         }
     }
     return TintersectionResult::getNotHit ();
+}
+
+float Tsphere::getIntensity(int direction)
+{
+
+}
+
+bool Tsphere::isVisible(QVector3D pos, Tscene *scene)
+{
+    auto dir = m_center - pos;
+    dir.normalize ();
+    auto result = scene->intersect (Tray(pos,dir));
+    if(result.geometry () == this)
+    {
+        return true;
+    }else
+    {
+        return false;
+    }
+}
+
+Tcolor Tsphere::getIrradiance(QVector3D pos, QVector3D normal, Tscene *scene)
+{
+    return this->material ()->sampleDiffuseTexture ()*this->material ()->emission ();
+}
+
+QVector3D Tsphere::getDir(QVector3D pos)
+{
+    auto dir =pos -  m_center;
+    return dir;
 }
 
 

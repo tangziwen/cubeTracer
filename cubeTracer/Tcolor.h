@@ -10,6 +10,8 @@ public:
     ~Tcolor();
     Tcolor operator + (const Tcolor & color) const;
     Tcolor operator * (const Tcolor & color) const;
+    Tcolor operator * (const float factor) const;
+    Tcolor operator +=(const Tcolor & color);
     Tcolor modulate(float f)const;
     int r,g,b;
 };

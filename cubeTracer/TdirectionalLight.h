@@ -8,8 +8,12 @@ class TdirectionalLight :public TbaseLight
 public:
     TdirectionalLight(QVector3D dir,float maxIntensity,Tcolor color);
     ~TdirectionalLight();
+    virtual bool isVisible(QVector3D pos,Tscene * scene);
     virtual float getIntensity(int direction);
-    virtual float getIrradiance(QVector3D pos,QVector3D normal,Tscene * scene);
+    virtual Tcolor getIrradiance(QVector3D pos,QVector3D normal,Tscene * scene);
+    Tcolor color() const;
+    void setColor(const Tcolor &color);
+
 private:
     QVector3D m_dir;
     Tcolor m_color;

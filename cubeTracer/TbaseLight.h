@@ -2,14 +2,17 @@
 #define TBASELIGHT_H
 
 #include <QVector3D>
+#include "Tcolor.h"
 class Tscene;
 class TbaseLight
 {
 public:
     TbaseLight();
     ~TbaseLight();
-    virtual float getIntensity(int direction) = 0;
-    virtual float getIrradiance(QVector3D pos,QVector3D normal, Tscene *scene) = 0;
+    virtual QVector3D getDir(QVector3D pos);
+    virtual float getIntensity(int direction);
+    virtual bool isVisible(QVector3D pos,Tscene * scene);
+    virtual Tcolor getIrradiance(QVector3D pos,QVector3D normal, Tscene *scene);
 };
 
 #endif // TBASELIGHT_H

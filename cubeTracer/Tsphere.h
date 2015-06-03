@@ -16,6 +16,10 @@ public:
 
     virtual TintersectionResult getIntersect(const Tray & ray);
 
+    virtual float getIntensity(int direction);
+    virtual bool isVisible(QVector3D pos,Tscene * scene);
+    virtual Tcolor getIrradiance(QVector3D pos,QVector3D normal, Tscene *scene);
+    virtual QVector3D getDir(QVector3D pos);
 private:
     void updateSqrRadius();
 private:

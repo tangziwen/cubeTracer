@@ -13,6 +13,10 @@ Tscene::~Tscene()
 void Tscene::addGeometry(TbaseGeometry *g)
 {
     m_geometryList.push_back (g);
+    if(g->isLight ())
+    {
+        m_lightList.push_back (g);
+    }
 }
 
 void Tscene::addLight(TbaseLight *light)
