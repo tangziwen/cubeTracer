@@ -1,6 +1,6 @@
 #include "Tcamera.h"
 #include <math.h>
-Tcamera::Tcamera(QVector3D eye, QVector3D front, QVector3D upRef, float fov, float far)
+Tcamera::Tcamera(Tvector eye, Tvector front, Tvector upRef, float fov, float far)
     :m_eye(eye),m_front(front),m_upRef(upRef),m_fov(fov),m_far(far)
 {
     init();
@@ -13,8 +13,8 @@ Tcamera::~Tcamera()
 
 void Tcamera::init()
 {
-    this->m_right = QVector3D::crossProduct (m_front,m_upRef);
-    m_up = QVector3D::crossProduct (m_right,m_front);
+    this->m_right = Tvector::crossProduct (m_front,m_upRef);
+    m_up = Tvector::crossProduct (m_right,m_front);
     m_fovScale = tan(m_fov * 0.5 * 3.14 / 180) * 2;
 }
 float Tcamera::fov() const
@@ -58,52 +58,52 @@ void Tcamera::setFovScale(float fovScale)
     m_fovScale = fovScale;
 }
 
-QVector3D Tcamera::right() const
+Tvector Tcamera::right() const
 {
     return m_right;
 }
 
-void Tcamera::setRight(const QVector3D &right)
+void Tcamera::setRight(const Tvector &right)
 {
     m_right = right;
 }
 
-QVector3D Tcamera::up() const
+Tvector Tcamera::up() const
 {
     return m_up;
 }
 
-void Tcamera::setUp(const QVector3D &up)
+void Tcamera::setUp(const Tvector &up)
 {
     m_up = up;
 }
 
-QVector3D Tcamera::front() const
+Tvector Tcamera::front() const
 {
     return m_front;
 }
 
-void Tcamera::setFront(const QVector3D &front)
+void Tcamera::setFront(const Tvector &front)
 {
     m_front = front;
 }
 
-QVector3D Tcamera::upRef() const
+Tvector Tcamera::upRef() const
 {
     return m_upRef;
 }
 
-void Tcamera::setUpRef(const QVector3D &upRef)
+void Tcamera::setUpRef(const Tvector &upRef)
 {
     m_upRef = upRef;
 }
 
-QVector3D Tcamera::eye() const
+Tvector Tcamera::eye() const
 {
     return m_eye;
 }
 
-void Tcamera::setEye(const QVector3D &eye)
+void Tcamera::setEye(const Tvector &eye)
 {
     m_eye = eye;
 }

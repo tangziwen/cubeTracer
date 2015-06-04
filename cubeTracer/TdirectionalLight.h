@@ -1,21 +1,21 @@
 #ifndef TDIRECTIONALLIGHT_H
 #define TDIRECTIONALLIGHT_H
-#include <qvector3d.h>
+#include <Tvector.h>
 #include "TbaseLight.h"
 #include "Tcolor.h"
 class TdirectionalLight :public TexplicitLight
 {
 public:
-    TdirectionalLight(QVector3D dir,float maxIntensity,Tcolor color);
+    TdirectionalLight(Tvector dir,float maxIntensity,Tcolor color);
     ~TdirectionalLight();
-    virtual bool isVisible(QVector3D pos,Tscene * scene);
+    virtual bool isVisible(Tvector pos,Tscene * scene);
     virtual float getIntensity(int direction);
-    virtual Tcolor getIrradiance(QVector3D pos,QVector3D normal,Tscene * scene);
+    virtual Tcolor getIrradiance(Tvector pos,Tvector normal,Tscene * scene);
     Tcolor color() const;
     void setColor(const Tcolor &color);
-    virtual QVector3D getDir(QVector3D pos);
+    virtual Tvector getDir(Tvector pos);
 private:
-    QVector3D m_dir;
+    Tvector m_dir;
     Tcolor m_color;
     float m_maxIntensity;
 };

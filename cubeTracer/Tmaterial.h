@@ -2,7 +2,7 @@
 #define TMATERIAL_H
 #include "Tcolor.h"
 #include "Ttexture2D.h"
-#include <qvector3d.h>
+#include <Tvector.h>
 class Tmaterial
 {
 public:
@@ -11,7 +11,7 @@ public:
 
     virtual Tcolor sampleSelfColor();
 
-    virtual float BRDF(QVector3D viewDirection,QVector3D lightDirection,QVector3D normal);
+    virtual float BRDF(Tvector negativeViewDirection, Tvector negativeLightDirection,Tvector normal);
 
     Tcolor selfColor() const;
     void setSelfColor(const Tcolor &selfColor);

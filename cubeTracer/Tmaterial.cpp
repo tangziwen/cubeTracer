@@ -11,7 +11,7 @@ Tmaterial::~Tmaterial()
 
 }
 
-float Tmaterial::BRDF(QVector3D viewDirection, QVector3D lightDirection, QVector3D normal)
+float Tmaterial::BRDF(Tvector negativeViewDirection, Tvector negativeLightDirection, Tvector normal)
 {
     return 1;
 }

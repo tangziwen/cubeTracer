@@ -1,7 +1,7 @@
 #include "Tsphere.h"
 #include <math.h>
 #include "Tscene.h"
-Tsphere::Tsphere(float radius, QVector3D center)
+Tsphere::Tsphere(float radius, Tvector center)
     :m_radius(radius),m_center(center)
 {
     updateSqrRadius();
@@ -21,12 +21,12 @@ void Tsphere::setRadius(float radius)
     m_radius = radius;
     updateSqrRadius();
 }
-QVector3D Tsphere::center() const
+Tvector Tsphere::center() const
 {
     return m_center;
 }
 
-void Tsphere::setCenter(QVector3D cnter)
+void Tsphere::setCenter(Tvector cnter)
 {
     m_center = cnter;
 }
@@ -36,7 +36,7 @@ TintersectionResult Tsphere::getIntersect(const Tray &ray)
 
     auto v = ray.origin () - this->center ();
     auto a0 = v.lengthSquared () - this->m_sqrRadius;
-    auto DdotV = QVector3D::dotProduct (ray.direction (),v);
+    auto DdotV = Tvector::dotProduct (ray.direction (),v);
 
     if (DdotV <= 0) {
         auto discr = DdotV * DdotV - a0;
@@ -59,7 +59,7 @@ float Tsphere::getIntensity(int direction)
 
 }
 
-bool Tsphere::isVisible(QVector3D pos, Tscene *scene)
+bool Tsphere::isVisible(Tvector pos, Tscene *scene)
 {
     auto dir = m_center - pos;
     dir.normalize ();
@@ -73,12 +73,12 @@ bool Tsphere::isVisible(QVector3D pos, Tscene *scene)
     }
 }
 
-Tcolor Tsphere::getIrradiance(QVector3D pos, QVector3D normal, Tscene *scene)
+Tcolor Tsphere::getIrradiance(Tvector pos, Tvector normal, Tscene *scene)
 {
     return this->material ()->sampleSelfColor ()*this->material ()->emission ();
 }
 
-QVector3D Tsphere::getDir(QVector3D pos)
+Tvector Tsphere::getDir(Tvector pos)
 {
     auto dir =pos -  m_center;
     return dir;

@@ -30,7 +30,8 @@ SOURCES += main.cpp \
     Ttexture2D.cpp \
     TblinnPhongMaterial.cpp \
     Tmaterial.cpp \
-    TglassyMaterial.cpp
+    TmirrorMaterial.cpp \
+    Tvector.cpp
 
 HEADERS  += \
     softWarePainter.h \
@@ -48,6 +49,7 @@ HEADERS  += \
     Ttexture2D.h \
     TblinnPhongMaterial.h \
     Tmaterial.h \
-    TglassyMaterial.h
+    TglassyMaterial.h \
+    Tvector.h
 
 FORMS    +=

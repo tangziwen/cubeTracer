@@ -4,7 +4,7 @@
 #include "Tcamera.h"
 #include "Tscene.h"
 #include "Tcolor.h"
-
+#include <QtCore>
 #ifdef QT_VERSION
 #include <qimage.h>
 #endif

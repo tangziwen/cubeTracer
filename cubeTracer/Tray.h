@@ -1,22 +1,22 @@
 #ifndef TRAY_H
 #define TRAY_H
-#include <QVector3D>
+#include "tvector.h"
 
 class Tray
 {
 public:
-    Tray(const QVector3D &orgin, const QVector3D & direction);
+    Tray(const Tvector &orgin, const Tvector & direction);
     ~Tray();
-    QVector3D origin() const;
-    void setOrigin(const QVector3D &origin);
+    Tvector origin() const;
+    void setOrigin(const Tvector &origin);
 
-    QVector3D direction() const;
-    void setDirection(const QVector3D &direction);
+    Tvector direction() const;
+    void setDirection(const Tvector &direction);
 
-    QVector3D getPoint(float t) const;
+    Tvector getPoint(float t) const;
 private:
-    QVector3D m_origin;
-    QVector3D m_direction;
+    Tvector m_origin;
+    Tvector m_direction;
 };
 
 #endif // TRAY_H

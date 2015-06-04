@@ -1,7 +1,7 @@
 #ifndef TINTERSECTIONRESULT_H
 #define TINTERSECTIONRESULT_H
 
-#include <QVector3D>
+#include "tvector.h"
 
 class TbaseGeometry;
 
@@ -10,11 +10,11 @@ class TintersectionResult
 public:
     TintersectionResult();
     ~TintersectionResult();
-    QVector3D pos() const;
-    void setPos(const QVector3D &pos);
+    Tvector pos() const;
+    void setPos(const Tvector &pos);
 
-    QVector3D normal() const;
-    void setNormal(const QVector3D &normal);
+    Tvector normal() const;
+    void setNormal(const Tvector &normal);
 
     float distance() const;
     void setDistance(float distance);
@@ -24,8 +24,8 @@ public:
 
     static TintersectionResult getNotHit();
 private:
-    QVector3D m_pos;
-    QVector3D m_normal;
+    Tvector m_pos;
+    Tvector m_normal;
     float m_distance;
     TbaseGeometry * m_geometry;
 };

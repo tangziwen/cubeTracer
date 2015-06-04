@@ -13,11 +13,10 @@ TblinnPhongMaterial::~TblinnPhongMaterial()
 
 }
 
-float TblinnPhongMaterial::BRDF(QVector3D viewDirection, QVector3D lightDirection, QVector3D normal)
+float TblinnPhongMaterial::BRDF(Tvector negativeViewDirection, Tvector negativeLightDirection, Tvector normal)
 {
-    lightDirection = -lightDirection;
-    auto half = (viewDirection + lightDirection).normalized();
-    float specAngle =std::max(QVector3D::dotProduct (half, normal), 0.0f);
+    auto half = (negativeViewDirection + negativeLightDirection).normalized();
+    float specAngle =std::max(Tvector::dotProduct (half, normal), 0.0f);
     float specularPower = pow(specAngle, m_shininess);
     return specularPower + m_diffusePower;
 }

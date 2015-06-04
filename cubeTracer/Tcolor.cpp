@@ -52,3 +52,8 @@ Tcolor Tcolor::modulate(float f) const
     return Tcolor(red,green, blue);
 }
 
+float Tcolor::luminance()
+{
+    return r *0.299 + g* 0.587 + b*0.114;
+}
+

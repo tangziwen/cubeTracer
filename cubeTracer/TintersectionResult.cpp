@@ -11,21 +11,21 @@ TintersectionResult::~TintersectionResult()
 {
 
 }
-QVector3D TintersectionResult::pos() const
+Tvector TintersectionResult::pos() const
 {
     return m_pos;
 }
 
-void TintersectionResult::setPos(const QVector3D &pos)
+void TintersectionResult::setPos(const Tvector &pos)
 {
     m_pos = pos;
 }
-QVector3D TintersectionResult::normal() const
+Tvector TintersectionResult::normal() const
 {
     return m_normal;
 }
 
-void TintersectionResult::setNormal(const QVector3D &normal)
+void TintersectionResult::setNormal(const Tvector &normal)
 {
     m_normal = normal;
 }
@@ -53,8 +53,8 @@ TintersectionResult TintersectionResult::getNotHit()
     TintersectionResult result;
     result.setGeometry (NULL);
     result.setDistance (0);
-    result.setPos (QVector3D(0,0,0));
-    result.setNormal (QVector3D(0,0,0));
+    result.setPos (Tvector(0,0,0));
+    result.setNormal (Tvector(0,0,0));
     return result;
 }
 

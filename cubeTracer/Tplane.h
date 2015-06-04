@@ -3,16 +3,16 @@
 
 #include "TintersectionResult.h"
 #include "TbaseGeometry.h"
-#include <QVector3D>
+#include "tvector.h"
 class Tplane : public TbaseGeometry
 {
 public:
-    Tplane(QVector3D normal,float dist);
+    Tplane(Tvector normal,float dist);
     ~Tplane();
     virtual TintersectionResult getIntersect(const Tray & ray);
 private:
-    QVector3D m_normal;
-    QVector3D m_pos;
+    Tvector m_normal;
+    Tvector m_pos;
     float m_dist;
 };
 

@@ -13,6 +13,7 @@ public:
     Tcolor operator * (const float factor) const;
     Tcolor operator +=(const Tcolor & color);
     Tcolor modulate(float f)const;
+    float luminance();
     float r,g,b;
 };
 

@@ -10,7 +10,7 @@ public:
     TblinnPhongMaterial(float diffusePower, float shinnes);
     ~TblinnPhongMaterial();
 
-    virtual float BRDF(QVector3D viewDirection, QVector3D lightDirection, QVector3D normal);
+    virtual float BRDF(Tvector negativeViewDirection, Tvector negativeLightDirection, Tvector normal);
 
     float shininess() const;
     void setShininess(float shininess);

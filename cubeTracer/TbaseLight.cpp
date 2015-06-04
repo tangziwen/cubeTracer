@@ -11,9 +11,9 @@ TexplicitLight::~TexplicitLight()
 
 }
 
-QVector3D TexplicitLight::getDir(QVector3D pos)
+Tvector TexplicitLight::getDir(Tvector pos)
 {
-    return QVector3D();
+    return Tvector();
 }
 
 float TexplicitLight::getIntensity(int direction)
@@ -21,12 +21,12 @@ float TexplicitLight::getIntensity(int direction)
     return 0;
 }
 
-bool TexplicitLight::isVisible(QVector3D pos, Tscene *scene)
+bool TexplicitLight::isVisible(Tvector pos, Tscene *scene)
 {
     return false;
 }
 
-Tcolor TexplicitLight::getIrradiance(QVector3D pos, QVector3D normal, Tscene *scene)
+Tcolor TexplicitLight::getIrradiance(Tvector pos, Tvector normal, Tscene *scene)
 {
     return Tcolor(1,1,1);
 }

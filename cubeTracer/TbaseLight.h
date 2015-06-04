@@ -1,7 +1,7 @@
 #ifndef TBASELIGHT_H
 #define TBASELIGHT_H
 
-#include <QVector3D>
+#include "tvector.h"
 #include "Tcolor.h"
 class Tscene;
 class TexplicitLight
@@ -9,10 +9,10 @@ class TexplicitLight
 public:
     TexplicitLight();
     ~TexplicitLight();
-    virtual QVector3D getDir(QVector3D pos);
+    virtual Tvector getDir(Tvector pos);
     virtual float getIntensity(int direction);
-    virtual bool isVisible(QVector3D pos,Tscene * scene);
-    virtual Tcolor getIrradiance(QVector3D pos,QVector3D normal, Tscene *scene);
+    virtual bool isVisible(Tvector pos,Tscene * scene);
+    virtual Tcolor getIrradiance(Tvector pos,Tvector normal, Tscene *scene);
 };
 
 #endif // TBASELIGHT_H

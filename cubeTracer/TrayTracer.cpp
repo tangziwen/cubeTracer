@@ -1,10 +1,11 @@
 #include "TrayTracer.h"
 
 #include <algorithm>
-
-static QVector3D reflect(QVector3D dir,QVector3D normal)
+#include <QDebug>
+#include "tvector.h"
+static Tvector reflect(Tvector dir,Tvector normal)
 {
-    auto reflectDirFactor =2 * QVector3D::dotProduct (normal,dir);
+    auto reflectDirFactor =2 * Tvector::dotProduct (normal,dir);
     auto tmp = normal;
     tmp *= reflectDirFactor;
     auto reflectDir = dir - tmp;
@@ -167,18 +168,19 @@ Tcolor TrayTracer::radianceWithExplicitLight(Tray ray,int reflectLevel)
             auto lightDir = light->getDir (result.pos ());
             auto lightRadiance = light->getIrradiance (result.pos (),result.normal (),scene());
 
-            reflectColor += lightRadiance * material->BRDF (ray.direction (),lightDir,result.normal ());
+            reflectColor += lightRadiance * material->BRDF (-ray.direction (),-lightDir,result.normal ());
         }
 
         //ideal specular radiance from other object.
         if(material->reflectiveness () > 0 && reflectLevel > 0)
         {
+
             // get the ideal specular ray.
             auto reflectVec = reflect(ray.direction (),result.normal ());
             auto reflectRay = Tray(result.pos (),reflectVec);
 
             auto idealSpecularRadiance = radianceWithExplicitLight(reflectRay,reflectLevel - 1);
-            reflectColor +=idealSpecularRadiance * material->BRDF (ray.direction (),reflectVec,result.normal ());
+            reflectColor +=idealSpecularRadiance * material->BRDF (-ray.direction (),reflectVec,result.normal ());
         }
 
         //render euqation.

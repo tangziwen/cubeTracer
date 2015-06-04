@@ -1,30 +1,30 @@
 #ifndef TCAMERA_H
 #define TCAMERA_H
 
-#include <QVector3D>
+#include "tvector.h"
 #include "Tray.h"
 
 class Tcamera
 {
 public:
-    Tcamera(QVector3D eye,QVector3D front,QVector3D upRef,float fov,float far);
+    Tcamera(Tvector eye,Tvector front,Tvector upRef,float fov,float far);
     ~Tcamera();
     void init();
 
-    QVector3D eye() const;
-    void setEye(const QVector3D &eye);
+    Tvector eye() const;
+    void setEye(const Tvector &eye);
 
-    QVector3D upRef() const;
-    void setUpRef(const QVector3D &upRef);
+    Tvector upRef() const;
+    void setUpRef(const Tvector &upRef);
 
-    QVector3D front() const;
-    void setFront(const QVector3D &front);
+    Tvector front() const;
+    void setFront(const Tvector &front);
 
-    QVector3D up() const;
-    void setUp(const QVector3D &up);
+    Tvector up() const;
+    void setUp(const Tvector &up);
 
-    QVector3D right() const;
-    void setRight(const QVector3D &right);
+    Tvector right() const;
+    void setRight(const Tvector &right);
 
     float fovScale() const;
     void setFovScale(float fovScale);
@@ -37,11 +37,11 @@ public:
     void setFar(float far);
 
 private:
-    QVector3D m_eye;
-    QVector3D m_upRef;
-    QVector3D m_front;
-    QVector3D m_up;
-    QVector3D m_right;
+    Tvector m_eye;
+    Tvector m_upRef;
+    Tvector m_front;
+    Tvector m_up;
+    Tvector m_right;
     float m_fovScale;
     float m_fov;
     float m_far;

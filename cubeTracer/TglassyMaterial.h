@@ -3,12 +3,12 @@
 
 #include "Tmaterial.h"
 
-class TglassyMaterial : public Tmaterial
+class TmirrorMaterial : public Tmaterial
 {
 public:
-    TglassyMaterial();
-    ~TglassyMaterial();
-    virtual float BRDF(QVector3D viewDirection, QVector3D lightDirection, QVector3D normal);
+    TmirrorMaterial();
+    ~TmirrorMaterial();
+    virtual float BRDF(Tvector negativeViewDirection, Tvector negativeLightDirection, Tvector normal);
 };
 
 #endif // TGLASSYMATERIAL_H
