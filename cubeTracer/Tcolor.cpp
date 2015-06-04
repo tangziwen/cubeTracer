@@ -1,17 +1,18 @@
 #include "Tcolor.h"
 #include <algorithm>
+#include <QDebug>
 Tcolor::Tcolor()
     :r(0),g(0),b(0)
 {
 
 }
 
-Tcolor::Tcolor(int red, int green, int blue)
+Tcolor::Tcolor(float red, float green, float blue)
     :r(red),g(green),b(blue)
 {
-    r = std::min(255,r);
-    g = std::min(255,g);
-    b = std::min(255,b);
+    r = std::min(red,1.0f);
+    g = std::min(green,1.0f);
+    b = std::min(blue,1.0f);
 }
 
 Tcolor::~Tcolor()
@@ -21,14 +22,13 @@ Tcolor::~Tcolor()
 
 Tcolor Tcolor::operator +(const Tcolor &color) const
 {
-    return Tcolor(this->r + color.r,this->g + color.g, this->b + color.b);
+
+    return  Tcolor(this->r + color.r,this->g + color.g, this->b + color.b);
 }
 
 Tcolor Tcolor::operator *(const Tcolor &color) const
 {
-    float red = 1.0*r/255,green=1.0*g/255,blue = 1.0*b/255;
-    float red1 = 1.0*color.r/255,green1=1.0*color.g/255,blue1 = 1.0*color.b/255;
-    return Tcolor(red*red1*255,green * green1*255, blue * blue1*255);
+    return Tcolor(r*color.r,g * color.g, b * color.b);
 }
 
 Tcolor Tcolor::operator *(const float factor) const
@@ -39,19 +39,16 @@ Tcolor Tcolor::operator *(const float factor) const
 Tcolor Tcolor::operator +=(const Tcolor &color)
 {
     r += color.r;
-    r = std::min(255,r);
     g += color.g;
-    g = std::min(255,g);
     b += color.b;
-    b = std::min(255,b);
     return (* this);
 }
 
 Tcolor Tcolor::modulate(float f) const
 {
-    int red = r * f;
-    int green = g * f;
-    int blue = b *f;
+    float red = r * f;
+    float green = g * f;
+    float blue = b *f;
     return Tcolor(red,green, blue);
 }
 

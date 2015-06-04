@@ -24,11 +24,13 @@ SOURCES += main.cpp \
     Tcamera.cpp \
     Tscene.cpp \
     TrayTracer.cpp \
-    Tmaterial.cpp \
     Tplane.cpp \
     TdirectionalLight.cpp \
     TbaseLight.cpp \
-    Ttexture2D.cpp
+    Ttexture2D.cpp \
+    TblinnPhongMaterial.cpp \
+    Tmaterial.cpp \
+    TglassyMaterial.cpp
 
 HEADERS  += \
     softWarePainter.h \
@@ -40,10 +42,12 @@ HEADERS  += \
     Tcamera.h \
     Tscene.h \
     TrayTracer.h \
-    Tmaterial.h \
     Tplane.h \
     TdirectionalLight.h \
     TbaseLight.h \
-    Ttexture2D.h
+    Ttexture2D.h \
+    TblinnPhongMaterial.h \
+    Tmaterial.h \
+    TglassyMaterial.h
 
 FORMS    +=

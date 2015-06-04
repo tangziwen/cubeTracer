@@ -1,32 +1,32 @@
 #include "TbaseLight.h"
 #include "Tscene.h"
 
-TbaseLight::TbaseLight()
+TexplicitLight::TexplicitLight()
 {
 
 }
 
-TbaseLight::~TbaseLight()
+TexplicitLight::~TexplicitLight()
 {
 
 }
 
-QVector3D TbaseLight::getDir(QVector3D pos)
+QVector3D TexplicitLight::getDir(QVector3D pos)
 {
     return QVector3D();
 }
 
-float TbaseLight::getIntensity(int direction)
+float TexplicitLight::getIntensity(int direction)
 {
     return 0;
 }
 
-bool TbaseLight::isVisible(QVector3D pos, Tscene *scene)
+bool TexplicitLight::isVisible(QVector3D pos, Tscene *scene)
 {
     return false;
 }
 
-Tcolor TbaseLight::getIrradiance(QVector3D pos, QVector3D normal, Tscene *scene)
+Tcolor TexplicitLight::getIrradiance(QVector3D pos, QVector3D normal, Tscene *scene)
 {
     return Tcolor(1,1,1);
 }

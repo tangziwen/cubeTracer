@@ -13,13 +13,9 @@ Tscene::~Tscene()
 void Tscene::addGeometry(TbaseGeometry *g)
 {
     m_geometryList.push_back (g);
-    if(g->isLight ())
-    {
-        m_lightList.push_back (g);
-    }
 }
 
-void Tscene::addLight(TbaseLight *light)
+void Tscene::addLight(TexplicitLight *light)
 {
     m_lightList.push_back (light);
 }
@@ -40,7 +36,7 @@ TintersectionResult Tscene::intersect(const Tray &ray)
     return minResult;
 }
 
-std::vector<TbaseLight *> &Tscene::getLightList()
+std::vector<TexplicitLight *> &Tscene::getLightList()
 {
     return m_lightList;
 }

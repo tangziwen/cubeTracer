@@ -15,7 +15,7 @@ public:
 
     enum class Policy
     {
-        NAIVE,
+        RAY_TRACING_EXPLICIT_LIGHT,
         DEPTH,
         NORMAL,
         DIRECT_LIGHT,
@@ -44,10 +44,10 @@ QImage * getQImage();
 #endif
 private:
     Tcolor handleDepth(Tray ray);
-    Tcolor handleNaive(Tray ray);
+    Tcolor getRadianceWithExplicitLight(Tray ray);
     Tcolor handleNormal(Tray ray);
 
-    Tcolor handleNaiveRecursive(Tray ray, int reflectLevel);
+    Tcolor radianceWithExplicitLight(Tray ray, int reflectLevel);
 private:
     int m_bufferWidth;
     int m_bufferHeight;

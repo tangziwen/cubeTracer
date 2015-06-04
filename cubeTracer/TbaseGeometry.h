@@ -6,7 +6,7 @@
 #include "Tmaterial.h"
 #include "TbaseLight.h"
 
-class TbaseGeometry : public TbaseLight
+class TbaseGeometry
 {
 public:
     TbaseGeometry();
@@ -14,12 +14,9 @@ public:
     virtual TintersectionResult getIntersect(const Tray & ray) = 0;
     Tmaterial *material() const;
     void setMaterial(Tmaterial *material);
-    virtual bool isLight() const;
-    virtual void setIsLight(bool isLight);
 
 private:
     Tmaterial * m_material;
-    bool m_isLight;
 };
 
 #endif // TBASEGEOMETRY_H

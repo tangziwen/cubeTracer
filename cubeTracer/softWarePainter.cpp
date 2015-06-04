@@ -25,7 +25,6 @@ void softWarePainter::paintEvent(QPaintEvent *event)
     {
         painter.drawImage (0,0,(*m_image));
     }
-    painter.drawText (100,200,"haha");
     painter.end ();
 }
 

@@ -1,7 +1,7 @@
 #include "Tmaterial.h"
 
-Tmaterial::Tmaterial(float reflectiveness, float diffuse, float emission, Tcolor diffuseColor)
-    :m_reflectiveness(reflectiveness), m_diffuse(diffuse),m_emission(emission),m_diffuseColor(diffuseColor),m_diffuseTexture(NULL)
+Tmaterial::Tmaterial()
+    :m_emission(0),m_reflectiveness(1) // default is a pure reflect object.
 {
 
 }
@@ -9,6 +9,43 @@ Tmaterial::Tmaterial(float reflectiveness, float diffuse, float emission, Tcolor
 Tmaterial::~Tmaterial()
 {
 
+}
+
+float Tmaterial::BRDF(QVector3D viewDirection, QVector3D lightDirection, QVector3D normal)
+{
+    return 1;
+}
+
+
+
+Tcolor Tmaterial::sampleSelfColor()
+{
+    if(m_selfTexture)
+    {
+        return Tcolor(1,1,1);
+    }else
+    {
+        return selfColor ();
+    }
+}
+
+Tcolor Tmaterial::selfColor() const
+{
+    return m_selfColor;
+}
+
+void Tmaterial::setSelfColor(const Tcolor &selfColor)
+{
+    m_selfColor = selfColor;
+}
+Ttexture2D *Tmaterial::selfTexture() const
+{
+    return m_selfTexture;
+}
+
+void Tmaterial::setSelfTexture(Ttexture2D *selfTexture)
+{
+    m_selfTexture = selfTexture;
 }
 float Tmaterial::reflectiveness() const
 {
@@ -19,55 +56,6 @@ void Tmaterial::setReflectiveness(float reflectiveness)
 {
     m_reflectiveness = reflectiveness;
 }
-float Tmaterial::diffuse() const
-{
-    return m_diffuse;
-}
-
-void Tmaterial::setDiffuse(float diffuse)
-{
-    m_diffuse = diffuse;
-}
-Tcolor Tmaterial::diffuseColor() const
-{
-    return m_diffuseColor;
-}
-
-void Tmaterial::setDiffuseColor(const Tcolor &diffuseColor)
-{
-    m_diffuseColor = diffuseColor;
-}
-
-Tcolor Tmaterial::sampleDiffuseTexture(Tray ray, QVector3D position, QVector3D normal)
-{
-    if(m_diffuseTexture)
-    {
-        return Tcolor(1,1,1);
-    }else
-    {
-        return diffuseColor ();
-    }
-}
-
-Tcolor Tmaterial::sampleDiffuseTexture()
-{
-    if(m_diffuseTexture)
-    {
-        return Tcolor(1,1,1);
-    }else
-    {
-        return diffuseColor ();
-    }
-}
-Ttexture2D *Tmaterial::diffuseTexture() const
-{
-    return m_diffuseTexture;
-}
-
-void Tmaterial::setDiffuseTexture(Ttexture2D *diffuseTexture)
-{
-    m_diffuseTexture = diffuseTexture;
-}
 float Tmaterial::emission() const
 {
     return m_emission;
@@ -77,9 +65,6 @@ void Tmaterial::setEmission(float emission)
 {
     m_emission = emission;
 }
-
-
-
 
 
 

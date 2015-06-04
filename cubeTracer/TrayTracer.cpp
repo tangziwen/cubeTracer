@@ -49,8 +49,8 @@ void TrayTracer::generate(TrayTracer::Policy policy)
                 break;
             case Policy::DIRECT_LIGHT:
                 break;
-            case Policy::NAIVE:
-                color = handleNaive (ray);
+            case Policy::RAY_TRACING_EXPLICIT_LIGHT:
+                color = radianceWithExplicitLight(ray,1);
                 break;
             case Policy::NORMAL:
                 color = handleNormal(ray);
@@ -106,7 +106,7 @@ QImage *TrayTracer::getQImage()
         for(int x= 0;x<m_bufferWidth;x++)
         {
             auto color = getPixelAt (x,y);
-            qimage->setPixel (x,y,qRgb(color.r,color.g,color.b));
+            qimage->setPixel (x,y,qRgb(255*color.r,255*color.g,255*color.b));
         }
     }
     return qimage;
@@ -121,17 +121,12 @@ Tcolor TrayTracer::handleDepth(Tray ray)
     Tcolor col(0,0,0);
     auto result = scene()->intersect(ray);
     if (result.geometry()) {
-        auto depth = 255 - MIN((result.distance () / camera()->far ()) * 255,255);
+        auto depth = 1.0f - MIN((result.distance () / camera()->far ()),1.0f);
         col.r = depth;
         col.g = depth;
         col.b = depth;
     }
     return col;
-}
-
-Tcolor TrayTracer::handleNaive(Tray ray)
-{
-    return handleNaiveRecursive(ray,1);
 }
 
 Tcolor TrayTracer::handleNormal(Tray ray)
@@ -140,14 +135,14 @@ Tcolor TrayTracer::handleNormal(Tray ray)
     auto result = scene()->intersect(ray);
     if (result.geometry()) {
         auto normal = result.normal ();
-        col.r = (normal.x ()+1)*128;
-        col.g = (normal.y ()+1)*128;
-        col.b = (normal.z ()+1)*128;
+        col.r = normal.x() *0.5 + 0.5;
+        col.g = normal.y() *0.5 + 0.5;
+        col.b = normal.z() *0.5 + 0.5;
     }
     return col;
 }
 
-Tcolor TrayTracer::handleNaiveRecursive(Tray ray,int reflectLevel)
+Tcolor TrayTracer::radianceWithExplicitLight(Tray ray,int reflectLevel)
 {
     Tcolor finalColor(0,0,0);
     auto result = scene()->intersect(ray);
@@ -155,46 +150,39 @@ Tcolor TrayTracer::handleNaiveRecursive(Tray ray,int reflectLevel)
         auto material = result.geometry ()->material ();
         if(!material) return finalColor;
 
-        //emission
-        Tcolor emissionColor = material->sampleDiffuseTexture () * material->emission ();
-        //diffuse
-        Tcolor diffuseColor(0,0,0);
-        //specular
+        Tcolor selfColor = material->sampleSelfColor ();
+
+        //**********Emission.
+        auto emissionColor = selfColor*material->emission ();
+
+        //reflect
         Tcolor reflectColor;
         auto allLights = scene()->getLightList();
         for(int i =0;i<allLights.size ();i++)
         {
-            TbaseLight * light = allLights[i];
-            //we won't calculate invisible light.
+            TexplicitLight * light = allLights[i];
+
             if(!light->isVisible (result.pos (),scene())) continue;
-            //get the irradiance from the light.
-            auto lightIrradiance = light->getIrradiance (result.pos (),result.normal (),scene());
+            //get the irradiance from the explicit light source.
+            auto lightDir = light->getDir (result.pos ());
+            auto lightRadiance = light->getIrradiance (result.pos (),result.normal (),scene());
 
-            //diffuse radiance from the light.
-            //get the diffuse texture color
-            auto diffuseTextureColor = material->sampleDiffuseTexture (ray,result.pos (),result.normal ());
-            //diffuse color.
-            diffuseColor +=diffuseTextureColor*material->diffuse () * lightIrradiance;
-
-            //specular radiance from the light.
-            auto half = (light->getDir (result.pos ()) + ray.direction ())/((light->getDir (result.pos ()) + ray.direction ())).length ();
-            auto specFactor = pow(QVector3D::dotProduct (half,result.normal ()),2);
-            reflectColor += lightIrradiance*material->reflectiveness () * specFactor;
+            reflectColor += lightRadiance * material->BRDF (ray.direction (),lightDir,result.normal ());
         }
 
         //ideal specular radiance from other object.
-
-     if(material->reflectiveness () > 0 && reflectLevel > 0)
+        if(material->reflectiveness () > 0 && reflectLevel > 0)
         {
             // get the ideal specular ray.
             auto reflectVec = reflect(ray.direction (),result.normal ());
             auto reflectRay = Tray(result.pos (),reflectVec);
-            //get ideal specular ray irradiance.
-            auto idealSpecularRadiance = handleNaiveRecursive(reflectRay,reflectLevel - 1);
-            reflectColor +=idealSpecularRadiance .modulate (material->reflectiveness ());
+
+            auto idealSpecularRadiance = radianceWithExplicitLight(reflectRay,reflectLevel - 1);
+            reflectColor +=idealSpecularRadiance * material->BRDF (ray.direction (),reflectVec,result.normal ());
         }
 
-        finalColor = emissionColor + diffuseColor + reflectColor;
+        //render euqation.
+        finalColor = emissionColor+ selfColor*reflectColor*material->reflectiveness ();
     }
     return finalColor;
 }

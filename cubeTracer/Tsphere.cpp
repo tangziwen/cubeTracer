@@ -75,7 +75,7 @@ bool Tsphere::isVisible(QVector3D pos, Tscene *scene)
 
 Tcolor Tsphere::getIrradiance(QVector3D pos, QVector3D normal, Tscene *scene)
 {
-    return this->material ()->sampleDiffuseTexture ()*this->material ()->emission ();
+    return this->material ()->sampleSelfColor ()*this->material ()->emission ();
 }
 
 QVector3D Tsphere::getDir(QVector3D pos)

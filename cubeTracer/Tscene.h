@@ -12,12 +12,12 @@ public:
     Tscene();
     ~Tscene();
 void addGeometry(TbaseGeometry * g);
-void addLight(TbaseLight * light);
+void addLight(TexplicitLight * light);
 TintersectionResult intersect(const Tray & ray);
-std::vector<TbaseLight *> & getLightList();
+std::vector<TexplicitLight *> & getLightList();
 private:
 std::vector<TbaseGeometry *> m_geometryList;
-std::vector<TbaseLight *> m_lightList;
+std::vector<TexplicitLight *> m_lightList;
 };
 
 #endif // TSCENE_H

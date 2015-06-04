@@ -4,11 +4,11 @@
 #include <QVector3D>
 #include "Tcolor.h"
 class Tscene;
-class TbaseLight
+class TexplicitLight
 {
 public:
-    TbaseLight();
-    ~TbaseLight();
+    TexplicitLight();
+    ~TexplicitLight();
     virtual QVector3D getDir(QVector3D pos);
     virtual float getIntensity(int direction);
     virtual bool isVisible(QVector3D pos,Tscene * scene);

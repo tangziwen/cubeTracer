@@ -38,6 +38,7 @@ Tcolor TdirectionalLight::getIrradiance(QVector3D pos, QVector3D normal, Tscene 
     cosTheta = std::max(0.0f,cosTheta);
     return m_color.modulate (cosTheta);
 }
+
 Tcolor TdirectionalLight::color() const
 {
     return m_color;
@@ -46,6 +47,11 @@ Tcolor TdirectionalLight::color() const
 void TdirectionalLight::setColor(const Tcolor &color)
 {
     m_color = color;
+}
+
+QVector3D TdirectionalLight::getDir(QVector3D pos)
+{
+    return m_dir;
 }
 
 
