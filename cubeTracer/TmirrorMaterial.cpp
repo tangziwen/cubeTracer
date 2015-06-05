@@ -1,4 +1,4 @@
-#include "TglassyMaterial.h"
+#include "TmirrorMaterial.h"
 #include <algorithm>
 #include <math.h>
 TmirrorMaterial::TmirrorMaterial()
@@ -9,6 +9,11 @@ TmirrorMaterial::TmirrorMaterial()
 TmirrorMaterial::~TmirrorMaterial()
 {
 
+}
+
+Tmaterial::MaterialType TmirrorMaterial::getType()
+{
+    return MaterialType::Mirror;
 }
 
 float TmirrorMaterial::BRDF(Tvector negativeViewDirection, Tvector negativeLightDirection, Tvector normal)

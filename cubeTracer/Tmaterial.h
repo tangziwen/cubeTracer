@@ -6,6 +6,15 @@
 class Tmaterial
 {
 public:
+    enum class MaterialType
+    {
+        Undefined,
+        BlinnPhong,
+        Mirror,
+        Light,
+        Diffuse
+    };
+
     Tmaterial();
     ~Tmaterial();
 
@@ -24,6 +33,7 @@ public:
     float emission() const;
     void setEmission(float emission);
 
+    virtual MaterialType getType();
 protected:
     Tcolor m_selfColor;
     Ttexture2D * m_selfTexture;

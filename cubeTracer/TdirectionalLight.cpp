@@ -2,7 +2,6 @@
 #include "Tray.h"
 #include "Tscene.h"
 #include <algorithm>
-#include <QDebug>
 TdirectionalLight::TdirectionalLight(Tvector dir,float maxIntensity,Tcolor color)
     :m_dir(dir),m_maxIntensity(maxIntensity),m_color(color)
 {

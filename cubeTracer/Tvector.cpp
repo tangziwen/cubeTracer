@@ -1,8 +1,5 @@
 #include "tvector.h"
 #include <math.h>
-Tvector::Tvector()
-{
-}
 
 Tvector::Tvector(float x, float y, float z)
     :m_x(x),m_y(y),m_z(z)
@@ -76,6 +73,13 @@ const Tvector Tvector::operator +(const Tvector v) const
 const Tvector Tvector::operator -() const
 {
     return Tvector(-x(),-y(),-z());
+}
+
+void Tvector::negative()
+{
+    m_x *= -1;
+    m_y *= -1;
+    m_z *= -1;
 }
 
 float Tvector::lengthSquared() const

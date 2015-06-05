@@ -4,18 +4,15 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
 
 CONFIG += c++11
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+CONFIG += console
 
-TARGET = TrayTracer
 TEMPLATE = app
 
 
 SOURCES += main.cpp \
-    softWarePainter.cpp \
     Tcolor.cpp \
     Tray.cpp \
     Tsphere.cpp \
@@ -31,10 +28,12 @@ SOURCES += main.cpp \
     TblinnPhongMaterial.cpp \
     Tmaterial.cpp \
     TmirrorMaterial.cpp \
-    Tvector.cpp
+    Tvector.cpp \
+    TlightMaterial.cpp \
+    TdiffuseMaterial.cpp \
+    TbaseMath.cpp
 
 HEADERS  += \
-    softWarePainter.h \
     Tcolor.h \
     Tray.h \
     Tsphere.h \
@@ -49,7 +48,9 @@ HEADERS  += \
     Ttexture2D.h \
     TblinnPhongMaterial.h \
     Tmaterial.h \
-    TglassyMaterial.h \
-    Tvector.h
+    Tvector.h \
+    TlightMaterial.h \
+    TmirrorMaterial.h \
+    TdiffuseMaterial.h \
+    TbaseMath.h
 
-FORMS    +=

@@ -18,6 +18,7 @@ public:
     float diffusePower() const;
     void setDiffusePower(float diffusePower);
 
+    virtual MaterialType getType();
 private:
     float m_diffusePower;
     float m_shininess;

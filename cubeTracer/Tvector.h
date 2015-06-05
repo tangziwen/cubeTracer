@@ -5,8 +5,7 @@
 class Tvector
 {
 public:
-    Tvector();
-    Tvector(float x, float y, float z);
+    Tvector(float x =0, float y=0, float z =0);
     static float dotProduct(const Tvector & v1, const Tvector & v2);
     static Tvector reflect(Tvector in, Tvector normal);
     float x() const;
@@ -23,6 +22,7 @@ public:
     const Tvector operator /(float f);
     const Tvector operator +(const Tvector v)const;
     const Tvector operator -() const;
+    void negative();
     float lengthSquared() const;
     static Tvector crossProduct(const Tvector & v1, const Tvector & v2);
     void normalize();

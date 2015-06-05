@@ -8,6 +8,7 @@ class TmirrorMaterial : public Tmaterial
 public:
     TmirrorMaterial();
     ~TmirrorMaterial();
+    virtual MaterialType getType();
     virtual float BRDF(Tvector negativeViewDirection, Tvector negativeLightDirection, Tvector normal);
 };
 

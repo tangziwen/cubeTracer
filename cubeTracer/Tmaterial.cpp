@@ -1,7 +1,7 @@
 #include "Tmaterial.h"
 
 Tmaterial::Tmaterial()
-    :m_emission(0),m_reflectiveness(1) // default is a pure reflect object.
+    :m_emission(0),m_reflectiveness(1),m_selfTexture(NULL) // default is a pure reflect object.
 {
 
 }
@@ -55,6 +55,7 @@ float Tmaterial::reflectiveness() const
 void Tmaterial::setReflectiveness(float reflectiveness)
 {
     m_reflectiveness = reflectiveness;
+    m_emission = 1 - reflectiveness;
 }
 float Tmaterial::emission() const
 {
@@ -64,6 +65,12 @@ float Tmaterial::emission() const
 void Tmaterial::setEmission(float emission)
 {
     m_emission = emission;
+    m_reflectiveness = 1 - m_emission;
+}
+
+Tmaterial::MaterialType Tmaterial::getType()
+{
+    return MaterialType::Undefined;
 }
 
 

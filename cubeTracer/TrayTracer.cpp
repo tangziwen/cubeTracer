@@ -1,8 +1,11 @@
 #include "TrayTracer.h"
 
 #include <algorithm>
-#include <QDebug>
+
 #include "tvector.h"
+
+#include "TbaseMath.h"
+
 static Tvector reflect(Tvector dir,Tvector normal)
 {
     auto reflectDirFactor =2 * Tvector::dotProduct (normal,dir);
@@ -28,6 +31,11 @@ void TrayTracer::setPixelAt(int x, int y, Tcolor col)
     m_data[y*m_bufferWidth + x ] = col;
 }
 
+Tcolor TrayTracer::getPixelAt(int index)
+{
+    return m_data[index];
+}
+
 Tcolor TrayTracer::getPixelAt(int x, int y)
 {
     return m_data[y*m_bufferWidth + x ];
@@ -36,6 +44,7 @@ Tcolor TrayTracer::getPixelAt(int x, int y)
 void TrayTracer::generate(TrayTracer::Policy policy)
 {
     for (int y = 0; y < m_bufferHeight; y++) {
+        fprintf(stderr,"\rRendering: %5.2f%% .",100.0f*y/(m_bufferHeight));
         auto sy = 1- 1.0*y / m_bufferHeight;
         for (int x = 0; x < m_bufferWidth; x++) {
             auto sx = 1.0*x / m_bufferWidth;
@@ -50,16 +59,26 @@ void TrayTracer::generate(TrayTracer::Policy policy)
                 break;
             case Policy::DIRECT_LIGHT:
                 break;
-            case Policy::RAY_TRACING_EXPLICIT_LIGHT:
-                color = radianceWithExplicitLight(ray,1);
-                break;
             case Policy::NORMAL:
                 color = handleNormal(ray);
+                break;
+            case Policy::RAY_TRACING_EXPLICIT_LIGHT:
+                color = radianceWithExplicitLight(ray,3);
+                break;
+            case Policy::PATH_TRACING:
+            {
+                int sampleNums = 1000;
+                for(int sampeIndex = 0; sampeIndex < sampleNums; sampeIndex ++)
+                {
+                    color += radiancePathTracer(ray,3) / (1.0f *sampleNums);
+                }
+            }
                 break;
             }
             setPixelAt (x,y,color);
         }
     }
+    printf("\nGenearted.\n");
 }
 int TrayTracer::bufferWidth() const
 {
@@ -97,24 +116,20 @@ void TrayTracer::setScene(Tscene *scene)
 {
     m_scene = scene;
 }
-#ifdef QT_VERSION
 
-QImage *TrayTracer::getQImage()
+void TrayTracer::writeToFile(const char *fileName)
 {
-    auto qimage = new QImage(m_bufferWidth,m_bufferHeight,QImage::Format_RGB32);
-    for(int y =0;y<m_bufferHeight;y++)
+    printf("Writing the result to the %s image file.\n",fileName);
+    FILE *f = fopen(fileName, "w");         // Write image to PPM file.
+    fprintf(f, "P3\n%d %d\n%d\n", m_bufferWidth, m_bufferWidth, 255);
+    for (int i=0; i<m_bufferWidth*m_bufferHeight; i++)
     {
-        for(int x= 0;x<m_bufferWidth;x++)
-        {
-            auto color = getPixelAt (x,y);
-            qimage->setPixel (x,y,qRgb(255*color.r,255*color.g,255*color.b));
-        }
+        auto c = getPixelAt (i);
+        fprintf(f,"%d %d %d ",c.redInt (),c.blueInt (),c.greenInt ());
     }
-    return qimage;
+    fclose(f);
+    printf("Done.\n");
 }
-
-#endif
-
 
 #define MIN(a, b) (a>b?b:a)
 Tcolor TrayTracer::handleDepth(Tray ray)
@@ -145,10 +160,16 @@ Tcolor TrayTracer::handleNormal(Tray ray)
 
 Tcolor TrayTracer::radianceWithExplicitLight(Tray ray,int reflectLevel)
 {
+    if(reflectLevel <= 0)
+        return Tcolor(0,0,0);
     Tcolor finalColor(0,0,0);
     auto result = scene()->intersect(ray);
     if (result.geometry()) {
         auto material = result.geometry ()->material ();
+        if(reflectLevel !=3 && material->getType () == Tmaterial::MaterialType::Light)
+        {
+            printf("fuck");
+        }
         if(!material) return finalColor;
 
         Tcolor selfColor = material->sampleSelfColor ();
@@ -172,7 +193,7 @@ Tcolor TrayTracer::radianceWithExplicitLight(Tray ray,int reflectLevel)
         }
 
         //ideal specular radiance from other object.
-        if(material->reflectiveness () > 0 && reflectLevel > 0)
+        if(material->reflectiveness () > 0)
         {
 
             // get the ideal specular ray.
@@ -187,6 +208,51 @@ Tcolor TrayTracer::radianceWithExplicitLight(Tray ray,int reflectLevel)
         finalColor = emissionColor+ selfColor*reflectColor*material->reflectiveness ();
     }
     return finalColor;
+}
+
+Tcolor TrayTracer::radiancePathTracer(Tray ray, int reflectLevel)
+{
+    if(reflectLevel <=0) return Tcolor(0,0,0);
+    auto result = scene()->intersect(ray);
+    if (result.geometry()) {
+        auto material = result.geometry ()->material ();
+        auto emissionColor = material->sampleSelfColor () * material->emission ();
+        auto reflectColor = Tcolor(0,0,0);
+        switch(material->getType ())
+        {
+        case Tmaterial::MaterialType::Mirror://ideal specular object.
+        {
+            auto reflectVec = reflect(ray.direction (),result.normal ());
+            auto reflectRay = Tray(result.pos (),reflectVec);
+            auto idealSpecularRadiance = radiancePathTracer(reflectRay,reflectLevel - 1);
+            reflectColor +=idealSpecularRadiance * material->BRDF (-ray.direction (),reflectVec,result.normal ());
+        }
+            break;
+        case Tmaterial::MaterialType::Light://ideal emission object.
+        {
+            reflectColor = Tcolor(0,0,0);
+        }
+            break;
+        case Tmaterial::MaterialType::BlinnPhong:
+        {
+
+        }
+            break;
+        case Tmaterial::MaterialType::Diffuse:
+        {
+            Tvector dir (TbaseMath::randFN (),TbaseMath::randFN (),TbaseMath::randFN ());
+            if(Tvector::dotProduct (result.normal (),dir) < 0)
+            {
+                dir.negative ();
+            }
+            dir.normalize ();
+            reflectColor = radiancePathTracer(Tray(result.pos (),dir),reflectLevel - 1);
+        }
+            break;
+        }
+        return emissionColor + material->selfColor () * reflectColor * material->reflectiveness ();
+    }
+    return Tcolor(0,0,0);
 }
 
 

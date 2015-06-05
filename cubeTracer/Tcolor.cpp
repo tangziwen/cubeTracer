@@ -1,6 +1,7 @@
 #include "Tcolor.h"
 #include <algorithm>
-#include <QDebug>
+
+
 Tcolor::Tcolor()
     :r(0),g(0),b(0)
 {
@@ -44,12 +45,32 @@ Tcolor Tcolor::operator +=(const Tcolor &color)
     return (* this);
 }
 
+Tcolor Tcolor::operator /(float f) const
+{
+    return Tcolor(r / f, g / f, b /f);
+}
+
 Tcolor Tcolor::modulate(float f) const
 {
     float red = r * f;
     float green = g * f;
     float blue = b *f;
     return Tcolor(red,green, blue);
+}
+
+int Tcolor::redInt()
+{
+    return int(r*255);
+}
+
+int Tcolor::blueInt()
+{
+    return int(b * 255);
+}
+
+int Tcolor::greenInt()
+{
+    return int (g * 255);
 }
 
 float Tcolor::luminance()

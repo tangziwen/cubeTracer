@@ -40,6 +40,11 @@ void TblinnPhongMaterial::setDiffusePower(float diffusePower)
     m_diffusePower = diffusePower;
 }
 
+Tmaterial::MaterialType TblinnPhongMaterial::getType()
+{
+    return MaterialType::BlinnPhong;
+}
+
 
 
 
