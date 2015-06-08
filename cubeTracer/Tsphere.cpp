@@ -84,6 +84,11 @@ Tvector Tsphere::getDir(Tvector pos)
     return dir;
 }
 
+TbaseGeometry::GeometryType Tsphere::getType()
+{
+    return GeometryType::Sphere;
+}
+
 
 void Tsphere::updateSqrRadius()
 {

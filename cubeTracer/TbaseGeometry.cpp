@@ -19,5 +19,10 @@ void TbaseGeometry::setMaterial(Tmaterial *material)
     m_material = material;
 }
 
+TbaseGeometry::GeometryType TbaseGeometry::getType()
+{
+    return GeometryType::Undefined;
+}
+
 
 

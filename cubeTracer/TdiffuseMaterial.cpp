@@ -17,6 +17,6 @@ Tmaterial::MaterialType TdiffuseMaterial::getType()
 
 float TdiffuseMaterial::BRDF(Tvector negativeViewDirection, Tvector negativeLightDirection, Tvector normal)
 {
-    return 0.7;
+    return 1;
 }
 

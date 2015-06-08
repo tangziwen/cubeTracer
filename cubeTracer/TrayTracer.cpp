@@ -1,10 +1,37 @@
 #include "TrayTracer.h"
-
+#include <time.h>
+#include <string.h>
 #include <algorithm>
 
 #include "tvector.h"
 
 #include "TbaseMath.h"
+inline void getElapseTime(clock_t start, clock_t end, char * str)
+{
+    clock_t totalSces = (end - start)/CLOCKS_PER_SEC;
+    clock_t tmp = totalSces;
+    clock_t elapse_time[3] ={0,0,0};
+    for(int i = 2;i>=0;i--)
+    {
+        elapse_time[i] = tmp%60;
+        tmp /= 60;
+    }
+    char tmpStr[100] = {0};
+    if(elapse_time[0])
+    {
+        sprintf(tmpStr,"%ld hours, ",elapse_time[0]);
+        strcat(str,tmpStr);
+    }
+    if(elapse_time[1])
+    {
+        sprintf(tmpStr,"%ld minutes, ",elapse_time[1]);
+        strcat(str,tmpStr);
+    }
+    //always show the seconds.
+    sprintf(tmpStr,"%ld seconds.\n",elapse_time[2]);
+    strcat(str,tmpStr);
+}
+
 
 static Tvector reflect(Tvector dir,Tvector normal)
 {
@@ -43,10 +70,11 @@ Tcolor TrayTracer::getPixelAt(int x, int y)
 
 void TrayTracer::generate(TrayTracer::Policy policy)
 {
-    for (int y = 0; y < m_bufferHeight; y++) {
+    clock_t start = clock();
+    for (int y = 0; y < m_bufferHeight; y+=2) {
         fprintf(stderr,"\rRendering: %5.2f%% .",100.0f*y/(m_bufferHeight));
         auto sy = 1- 1.0*y / m_bufferHeight;
-        for (int x = 0; x < m_bufferWidth; x++) {
+        for (int x = 0; x < m_bufferWidth; x+=2) {
             auto sx = 1.0*x / m_bufferWidth;
             auto ray = camera()->generateRay(sx, sy);
             Tcolor color(0,0,0);
@@ -67,18 +95,25 @@ void TrayTracer::generate(TrayTracer::Policy policy)
                 break;
             case Policy::PATH_TRACING:
             {
-                int sampleNums = 200;
+                int sampleNums = 100;
                 for(int sampeIndex = 0; sampeIndex < sampleNums; sampeIndex ++)
                 {
-                    color += radiancePathTracer(ray,3) / (1.0f *sampleNums);
+                    color += radiancePathTracer(ray,6) / (1.0f *sampleNums);
                 }
             }
                 break;
             }
             setPixelAt (x,y,color);
+            setPixelAt (x+1,y,color);
+            setPixelAt (x+1,y+1,color);
+            setPixelAt (x,y+1,color);
         }
     }
+    clock_t end = clock();
+    char durationStr[100] ={0};
+    getElapseTime (start,end,durationStr);
     printf("\nGenearted.\n");
+    printf("last %s",durationStr);
 }
 int TrayTracer::bufferWidth() const
 {
@@ -125,7 +160,7 @@ void TrayTracer::writeToFile(const char *fileName)
     for (int i=0; i<m_bufferWidth*m_bufferHeight; i++)
     {
         auto c = getPixelAt (i);
-        fprintf(f,"%d %d %d ",c.redInt (),c.blueInt (),c.greenInt ());
+        fprintf(f,"%d %d %d ",c.redInt (),c.greenInt (),c.blueInt ());
     }
     fclose(f);
     printf("Done.\n");
@@ -144,6 +179,7 @@ Tcolor TrayTracer::handleDepth(Tray ray)
     }
     return col;
 }
+
 
 Tcolor TrayTracer::handleNormal(Tray ray)
 {

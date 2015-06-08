@@ -27,3 +27,8 @@ TintersectionResult Tplane::getIntersect(const Tray &ray)
     return result;
 }
 
+TbaseGeometry::GeometryType Tplane::getType()
+{
+    return GeometryType::Plane;
+}
+

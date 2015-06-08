@@ -20,6 +20,7 @@ public:
     virtual bool isVisible(Tvector pos,Tscene * scene);
     virtual Tcolor getIrradiance(Tvector pos,Tvector normal, Tscene *scene);
     virtual Tvector getDir(Tvector pos);
+    virtual GeometryType getType();
 private:
     void updateSqrRadius();
 private:

@@ -10,6 +10,7 @@ public:
     Tplane(Tvector normal,float dist);
     ~Tplane();
     virtual TintersectionResult getIntersect(const Tray & ray);
+    virtual GeometryType getType();
 private:
     Tvector m_normal;
     Tvector m_pos;

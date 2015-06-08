@@ -60,17 +60,17 @@ Tcolor Tcolor::modulate(float f) const
 
 int Tcolor::redInt()
 {
-    return int(r*255);
+    return int (pow(r,1.0f /2.2)*255 + 0.5);
 }
 
 int Tcolor::blueInt()
 {
-    return int(b * 255);
+    return int (pow(b,1.0f /2.2)*255 + 0.5);
 }
 
 int Tcolor::greenInt()
 {
-    return int (g * 255);
+    return int (pow(g,1.0f /2.2)*255 + 0.5);
 }
 
 float Tcolor::luminance()

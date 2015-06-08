@@ -64,7 +64,7 @@ void sceneForPathTracing(Tscene * scene)
 
     //top
     auto top = new Tplane(Tvector(0,-1,0), -20);
-    top->setMaterial (new TlightMaterial);
+    top->setMaterial (new TdiffuseMaterial);
     top->material ()->setSelfColor (Tcolor(0.8,0.8,0.8));
 
     //front
@@ -72,11 +72,15 @@ void sceneForPathTracing(Tscene * scene)
     front->setMaterial (new TdiffuseMaterial);
     front->material ()->setSelfColor (Tcolor(1,0.8,0.8));
 
-    auto lightBult = new Tsphere(4,Tvector(0,23,-5));
+    auto lightBult = new Tsphere(12,Tvector(0,29,-5));
     lightBult->setMaterial (new TlightMaterial());
     lightBult->material ()->setSelfColor (Tcolor(1,1,1));
 
-    auto mirrorSphere = new Tsphere(4,Tvector(3,10,-5));
+    auto diffuseSphere = new Tsphere(4,Tvector(-3,3.5,-3));
+    diffuseSphere->setMaterial (new TdiffuseMaterial());
+    diffuseSphere->material ()->setSelfColor (Tcolor(1,1,0));
+
+    auto mirrorSphere = new Tsphere(4,Tvector(3,3.5,-7));
     mirrorSphere->setMaterial (new TmirrorMaterial());
     mirrorSphere->material ()->setSelfColor (Tcolor(1,1,1));
 
@@ -89,6 +93,7 @@ void sceneForPathTracing(Tscene * scene)
     scene->addGeometry (top);
     scene->addGeometry (front);
     scene->addGeometry (mirrorSphere);
+    scene->addGeometry (diffuseSphere);
 }
 
 int main(int argc, char *argv[])
@@ -98,9 +103,6 @@ int main(int argc, char *argv[])
 
     auto camera = new Tcamera(Tvector(0, 10, 20), Tvector(0, 0, -1),  Tvector(0, 1, 0), 60,20);
     auto scene = new Tscene();
-
-
-
 
     TrayTracer tracer(640,640,camera,scene);
 
