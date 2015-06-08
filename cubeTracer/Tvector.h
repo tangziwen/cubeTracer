@@ -23,6 +23,7 @@ public:
     const Tvector operator +(const Tvector v)const;
     const Tvector operator -() const;
     void negative();
+    const Tvector negatived();
     float lengthSquared() const;
     static Tvector crossProduct(const Tvector & v1, const Tvector & v2);
     void normalize();

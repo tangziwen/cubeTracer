@@ -82,6 +82,11 @@ void Tvector::negative()
     m_z *= -1;
 }
 
+const Tvector Tvector::negatived()
+{
+    return Tvector(-x(),-y(),-z());
+}
+
 float Tvector::lengthSquared() const
 {
     return x()*x() + y() * y() + z() * z();

@@ -22,7 +22,7 @@ void Tscene::addLight(TexplicitLight *light)
 
 TintersectionResult Tscene::intersect(const Tray &ray)
 {
-    auto minDistance = 999999;
+    auto minDistance = 999999.0f;
     auto minResult = TintersectionResult::getNotHit ();
     for(int i =0;i<m_geometryList.size ();i++)
     {

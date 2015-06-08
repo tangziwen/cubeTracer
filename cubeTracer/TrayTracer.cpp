@@ -67,7 +67,7 @@ void TrayTracer::generate(TrayTracer::Policy policy)
                 break;
             case Policy::PATH_TRACING:
             {
-                int sampleNums = 1000;
+                int sampleNums = 200;
                 for(int sampeIndex = 0; sampeIndex < sampleNums; sampeIndex ++)
                 {
                     color += radiancePathTracer(ray,3) / (1.0f *sampleNums);
@@ -166,10 +166,6 @@ Tcolor TrayTracer::radianceWithExplicitLight(Tray ray,int reflectLevel)
     auto result = scene()->intersect(ray);
     if (result.geometry()) {
         auto material = result.geometry ()->material ();
-        if(reflectLevel !=3 && material->getType () == Tmaterial::MaterialType::Light)
-        {
-            printf("fuck");
-        }
         if(!material) return finalColor;
 
         Tcolor selfColor = material->sampleSelfColor ();
@@ -240,12 +236,31 @@ Tcolor TrayTracer::radiancePathTracer(Tray ray, int reflectLevel)
             break;
         case Tmaterial::MaterialType::Diffuse:
         {
-            Tvector dir (TbaseMath::randFN (),TbaseMath::randFN (),TbaseMath::randFN ());
-            if(Tvector::dotProduct (result.normal (),dir) < 0)
+            Tvector nl;
+            if(Tvector::dotProduct (result.normal (),ray.direction ())<0)
             {
-                dir.negative ();
+                nl = result.normal ();
+            }else
+            {
+                nl = result.normal ().negatived();
             }
-            dir.normalize ();
+
+            double r1=2*TbaseMath::PI*TbaseMath::randF ();
+            double r2=TbaseMath::randF ();
+            double r2s=sqrt(r2);
+            Tvector w=nl;
+            Tvector u;
+            if(fabs(w.x())>0.1)
+            {
+                u = Tvector(0,1,0);
+            }else
+            {
+                u = Tvector(1,0,0);
+            }
+            u = Tvector::crossProduct (u,w);
+            u.normalize ();
+            Tvector v=Tvector::crossProduct (w,u);
+            Tvector dir = (u*cos(r1)*r2s + v*sin(r1)*r2s + w*sqrt(1-r2)).normalized();
             reflectColor = radiancePathTracer(Tray(result.pos (),dir),reflectLevel - 1);
         }
             break;

@@ -22,7 +22,7 @@ float TmirrorMaterial::BRDF(Tvector negativeViewDirection, Tvector negativeLight
     float spec = Tvector::dotProduct (reflect,negativeViewDirection);
     if(fabs(spec - 1.0f) <0.00001)
     {
-        return 1;
+        return 0.9;
     }else
     {
         return 0;

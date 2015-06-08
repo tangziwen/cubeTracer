@@ -11,7 +11,6 @@
 #include <stdio.h>
 #include <string.h>
 
-
 //little test case
 void sceneForRayTracer(Tscene * scene)
 {
@@ -43,16 +42,53 @@ void sceneForRayTracer(Tscene * scene)
 
 void sceneForPathTracing(Tscene * scene)
 {
-    auto plane = new Tplane(Tvector(0,1,0), 0);
-    plane->setMaterial (new TdiffuseMaterial);
-    plane->material ()->setSelfColor (Tcolor(0.3,0.3,0.3));
+    //bottom
+    auto bottom = new Tplane(Tvector(0,1,0), 0);
+    bottom->setMaterial (new TdiffuseMaterial);
+    bottom->material ()->setSelfColor (Tcolor(0.3,0.3,1));
 
-    auto sphere3 = new Tsphere(4,Tvector(0,5,0));
-    sphere3->setMaterial (new TlightMaterial());
-    sphere3->material ()->setSelfColor (Tcolor(0,0,1));
+    //left
+    auto left = new Tplane(Tvector(1,0,0), -10);
+    left->setMaterial (new TdiffuseMaterial);
+    left->material ()->setSelfColor (Tcolor(1,0.1,0.1));
 
-    scene->addGeometry (sphere3);
-    scene->addGeometry (plane);
+    //right
+    auto right = new Tplane(Tvector(-1,0,0), -10);
+    right->setMaterial (new TdiffuseMaterial);
+    right->material ()->setSelfColor (Tcolor(0.1,1,0.1));
+
+    //back
+    auto back = new Tplane(Tvector(0,0,1), -20);
+    back->setMaterial (new TdiffuseMaterial);
+    back->material ()->setSelfColor (Tcolor(0.5,0.5,0.5));
+
+    //top
+    auto top = new Tplane(Tvector(0,-1,0), -20);
+    top->setMaterial (new TlightMaterial);
+    top->material ()->setSelfColor (Tcolor(0.8,0.8,0.8));
+
+    //front
+    auto front = new Tplane(Tvector(0,0,-1), -30);
+    front->setMaterial (new TdiffuseMaterial);
+    front->material ()->setSelfColor (Tcolor(1,0.8,0.8));
+
+    auto lightBult = new Tsphere(4,Tvector(0,23,-5));
+    lightBult->setMaterial (new TlightMaterial());
+    lightBult->material ()->setSelfColor (Tcolor(1,1,1));
+
+    auto mirrorSphere = new Tsphere(4,Tvector(3,10,-5));
+    mirrorSphere->setMaterial (new TmirrorMaterial());
+    mirrorSphere->material ()->setSelfColor (Tcolor(1,1,1));
+
+    scene->addGeometry (lightBult);
+
+    scene->addGeometry (right);
+    scene->addGeometry (bottom);
+    scene->addGeometry (back);
+    scene->addGeometry (left);
+    scene->addGeometry (top);
+    scene->addGeometry (front);
+    scene->addGeometry (mirrorSphere);
 }
 
 int main(int argc, char *argv[])
@@ -66,14 +102,14 @@ int main(int argc, char *argv[])
 
 
 
-    TrayTracer tracer(640,480,camera,scene);
+    TrayTracer tracer(640,640,camera,scene);
 
     switch(argc)
     {
     case 1:
     {
         sceneForPathTracing(scene);
-        tracer.generate (TrayTracer::Policy::RAY_TRACING_EXPLICIT_LIGHT);
+        tracer.generate (TrayTracer::Policy::PATH_TRACING);
         tracer.writeToFile ("./out.ppm");
     }
         break;
