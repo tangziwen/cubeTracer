@@ -41,4 +41,16 @@ std::vector<TexplicitLight *> &Tscene::getLightList()
     return m_lightList;
 }
 
+TbaseGeometry *Tscene::getRandomLight()
+{
+    for(int i =0;i<m_geometryList.size ();i++)
+    {
+        TbaseGeometry * geo = m_geometryList[i];
+        if(geo->material ()->getType () == Tmaterial::MaterialType::Light)
+        {
+            return geo;
+        }
+    }
+}
+
 

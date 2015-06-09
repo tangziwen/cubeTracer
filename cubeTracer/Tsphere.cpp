@@ -1,6 +1,7 @@
 #include "Tsphere.h"
 #include <math.h>
 #include "Tscene.h"
+#include "TbaseMath.h"
 Tsphere::Tsphere(float radius, Tvector center)
     :m_radius(radius),m_center(center)
 {
@@ -87,6 +88,27 @@ Tvector Tsphere::getDir(Tvector pos)
 TbaseGeometry::GeometryType Tsphere::getType()
 {
     return GeometryType::Sphere;
+}
+
+void Tsphere::getRandomPosInSurface(Tvector &pos, Tvector&normal)
+{
+    auto theta = TbaseMath::randPI ();
+    auto phi = TbaseMath::rand2PI ();
+
+    auto x= m_radius * sin(theta)*cos(phi);
+    auto y= m_radius * sin(theta) *sin(phi);
+    auto z=m_radius * cos(theta);
+
+    pos.setX (x);
+    pos.setY (y);
+    pos.setZ (z);
+
+    auto tmpNormal = pos - m_center;
+    tmpNormal.normalize ();
+
+    normal.setX (tmpNormal.x ());
+    normal.setY (tmpNormal.y ());
+    normal.setZ (tmpNormal.z ());
 }
 
 

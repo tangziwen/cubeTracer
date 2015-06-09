@@ -24,5 +24,10 @@ TbaseGeometry::GeometryType TbaseGeometry::getType()
     return GeometryType::Undefined;
 }
 
+void TbaseGeometry::getRandomPosInSurface(Tvector &pos, Tvector& normal)
+{
+
+}
+
 
 

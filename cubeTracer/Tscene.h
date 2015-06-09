@@ -15,6 +15,7 @@ void addGeometry(TbaseGeometry * g);
 void addLight(TexplicitLight * light);
 TintersectionResult intersect(const Tray & ray);
 std::vector<TexplicitLight *> & getLightList();
+TbaseGeometry *getRandomLight();
 private:
 std::vector<TbaseGeometry *> m_geometryList;
 std::vector<TexplicitLight *> m_lightList;

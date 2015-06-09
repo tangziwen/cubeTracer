@@ -11,9 +11,6 @@ Tcolor::Tcolor()
 Tcolor::Tcolor(float red, float green, float blue)
     :r(red),g(green),b(blue)
 {
-    r = std::min(red,1.0f);
-    g = std::min(green,1.0f);
-    b = std::min(blue,1.0f);
 }
 
 Tcolor::~Tcolor()
@@ -60,17 +57,17 @@ Tcolor Tcolor::modulate(float f) const
 
 int Tcolor::redInt()
 {
-    return int (pow(r,1.0f /2.2)*255 + 0.5);
+    return int (pow(std::min(r,1.0f),1.0f /2.2)*255 + 0.5);
 }
 
 int Tcolor::blueInt()
 {
-    return int (pow(b,1.0f /2.2)*255 + 0.5);
+    return int (pow(std::min(b,1.0f),1.0f /2.2)*255 + 0.5);
 }
 
 int Tcolor::greenInt()
 {
-    return int (pow(g,1.0f /2.2)*255 + 0.5);
+    return int (pow(std::min(g,1.0f),1.0f /2.2)*255 + 0.5);
 }
 
 float Tcolor::luminance()

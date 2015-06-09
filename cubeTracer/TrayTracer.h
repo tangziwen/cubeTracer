@@ -5,6 +5,7 @@
 #include "Tscene.h"
 #include "Tcolor.h"
 
+
 class TrayTracer
 {
 public:
@@ -15,7 +16,8 @@ public:
         DEPTH,
         NORMAL,
         DIRECT_LIGHT,
-        PATH_TRACING,
+        PATH_TRACING_UNIDIR,// unidirectional monte carlo path tracing
+        PATH_TRACING_BIDIR, // bidirectional montecarlo path tracing.
         CUSTOM
     };
 
@@ -29,7 +31,7 @@ public:
 
     Tcolor getPixelAt(int x,int y);
 
-    void generate(Policy policy);
+    void generate(Policy policy, int samplesPerPixel);
 
     int bufferWidth() const;
 
@@ -55,8 +57,13 @@ private:
 
     Tcolor radianceWithExplicitLight(Tray ray, int reflectLevel);
 
-    Tcolor radiancePathTracer(Tray ray, int reflectLevel);
+    Tcolor radiancePathTraceUni(Tray ray, int reflectLevel);
 
+    void getPath(Tray fromRay, int reflectLevel, std::vector<Tvector> * verticesList);
+
+    Tcolor radiancePathTraceBi(Tray ray, std::vector<Tvector> *path);
+    //try to concat the eye path and light path,the result is store in the eye path.
+    void concatEyeAndLight(std::vector<Tvector>* eye, std::vector<Tvector> * light);
 private:
     int m_bufferWidth;
     int m_bufferHeight;

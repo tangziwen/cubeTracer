@@ -23,6 +23,7 @@ public:
     void setMaterial(Tmaterial *material);
     virtual GeometryType getType();
 
+    virtual void getRandomPosInSurface(Tvector & pos, Tvector &normal);
 private:
     Tmaterial * m_material;
 };

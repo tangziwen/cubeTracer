@@ -72,9 +72,9 @@ void sceneForPathTracing(Tscene * scene)
     front->setMaterial (new TdiffuseMaterial);
     front->material ()->setSelfColor (Tcolor(1,0.8,0.8));
 
-    auto lightBult = new Tsphere(12,Tvector(0,29,-5));
+    auto lightBult = new Tsphere(0.5,Tvector(0,18,-5));
     lightBult->setMaterial (new TlightMaterial());
-    lightBult->material ()->setSelfColor (Tcolor(1,1,1));
+    lightBult->material ()->setSelfColor (Tcolor(12,12,12));
 
     auto diffuseSphere = new Tsphere(4,Tvector(-3,3.5,-3));
     diffuseSphere->setMaterial (new TdiffuseMaterial());
@@ -111,7 +111,7 @@ int main(int argc, char *argv[])
     case 1:
     {
         sceneForPathTracing(scene);
-        tracer.generate (TrayTracer::Policy::PATH_TRACING);
+        tracer.generate (TrayTracer::Policy::PATH_TRACING_BIDIR, 5000);
         tracer.writeToFile ("./out.ppm");
     }
         break;
@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
         if(strcmp(argv[1],"-n"))
         {
             sceneForRayTracer(scene);
-            tracer.generate (TrayTracer::Policy::RAY_TRACING_EXPLICIT_LIGHT);
+            tracer.generate (TrayTracer::Policy::RAY_TRACING_EXPLICIT_LIGHT,100);
         }else if(false)
         {
 

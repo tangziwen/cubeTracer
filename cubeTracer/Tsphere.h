@@ -21,6 +21,8 @@ public:
     virtual Tcolor getIrradiance(Tvector pos,Tvector normal, Tscene *scene);
     virtual Tvector getDir(Tvector pos);
     virtual GeometryType getType();
+
+    virtual void getRandomPosInSurface(Tvector & pos, Tvector &normal);
 private:
     void updateSqrRadius();
 private:

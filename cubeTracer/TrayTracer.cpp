@@ -68,13 +68,13 @@ Tcolor TrayTracer::getPixelAt(int x, int y)
     return m_data[y*m_bufferWidth + x ];
 }
 
-void TrayTracer::generate(TrayTracer::Policy policy)
+void TrayTracer::generate(TrayTracer::Policy policy,int samplesPerPixel)
 {
     clock_t start = clock();
-    for (int y = 0; y < m_bufferHeight; y+=2) {
+    for (int y = 0; y < m_bufferHeight; y++) {
         fprintf(stderr,"\rRendering: %5.2f%% .",100.0f*y/(m_bufferHeight));
         auto sy = 1- 1.0*y / m_bufferHeight;
-        for (int x = 0; x < m_bufferWidth; x+=2) {
+        for (int x = 0; x < m_bufferWidth; x++) {
             auto sx = 1.0*x / m_bufferWidth;
             auto ray = camera()->generateRay(sx, sy);
             Tcolor color(0,0,0);
@@ -93,20 +93,42 @@ void TrayTracer::generate(TrayTracer::Policy policy)
             case Policy::RAY_TRACING_EXPLICIT_LIGHT:
                 color = radianceWithExplicitLight(ray,3);
                 break;
-            case Policy::PATH_TRACING:
+            case Policy::PATH_TRACING_UNIDIR:
             {
-                int sampleNums = 100;
-                for(int sampeIndex = 0; sampeIndex < sampleNums; sampeIndex ++)
+                for(int sampeIndex = 0; sampeIndex < samplesPerPixel; sampeIndex ++)
                 {
-                    color += radiancePathTracer(ray,6) / (1.0f *sampleNums);
+                    color += radiancePathTraceUni(ray,6) / (1.0f *samplesPerPixel);
+                }
+            }
+                break;
+            case Policy::PATH_TRACING_BIDIR:
+            {
+                for(int sampeIndex = 0; sampeIndex < samplesPerPixel; sampeIndex ++)
+                {
+                    //get eye path.
+                    std::vector<Tvector> eyePath;// the path from the eye.
+                    eyePath.push_back (ray.origin ());//first add ray origin
+                    getPath(ray,4,&eyePath);
+
+                    //get light path
+                    std::vector<Tvector> lightPath;// the path from a random light.
+                    auto randomLight = scene()->getRandomLight();//get random light.
+                    Tvector lightPos,lightNormal;
+                    randomLight->getRandomPosInSurface (lightPos, lightNormal);//get random pos in random light.
+                    //add the light pos
+                    lightPath.push_back (lightPos);
+                    Tray lightFirstRay(lightPos,TbaseMath::uniformHemisphericalVector (lightNormal));
+                    getPath(lightFirstRay,4,&lightPath);
+
+                    //try to concat them,get the final light path.
+                    concatEyeAndLight(&eyePath,&lightPath);
+                    //get the radiance according the final light path.
+                    color += radiancePathTraceBi (ray,&eyePath)/ (1.0f *samplesPerPixel);
                 }
             }
                 break;
             }
             setPixelAt (x,y,color);
-            setPixelAt (x+1,y,color);
-            setPixelAt (x+1,y+1,color);
-            setPixelAt (x,y+1,color);
         }
     }
     clock_t end = clock();
@@ -242,7 +264,7 @@ Tcolor TrayTracer::radianceWithExplicitLight(Tray ray,int reflectLevel)
     return finalColor;
 }
 
-Tcolor TrayTracer::radiancePathTracer(Tray ray, int reflectLevel)
+Tcolor TrayTracer::radiancePathTraceUni(Tray ray, int reflectLevel)
 {
     if(reflectLevel <=0) return Tcolor(0,0,0);
     auto result = scene()->intersect(ray);
@@ -256,8 +278,9 @@ Tcolor TrayTracer::radiancePathTracer(Tray ray, int reflectLevel)
         {
             auto reflectVec = reflect(ray.direction (),result.normal ());
             auto reflectRay = Tray(result.pos (),reflectVec);
-            auto idealSpecularRadiance = radiancePathTracer(reflectRay,reflectLevel - 1);
-            reflectColor +=idealSpecularRadiance * material->BRDF (-ray.direction (),reflectVec,result.normal ());
+            auto idealSpecularRadiance = radiancePathTraceUni(reflectRay,reflectLevel - 1);
+            auto cosineFactor = Tvector::dotProduct (reflectVec,result.normal ());
+            reflectColor +=idealSpecularRadiance * material->BRDF (-ray.direction (),reflectVec,result.normal ())*cosineFactor;
         }
             break;
         case Tmaterial::MaterialType::Light://ideal emission object.
@@ -297,13 +320,126 @@ Tcolor TrayTracer::radiancePathTracer(Tray ray, int reflectLevel)
             u.normalize ();
             Tvector v=Tvector::crossProduct (w,u);
             Tvector dir = (u*cos(r1)*r2s + v*sin(r1)*r2s + w*sqrt(1-r2)).normalized();
-            reflectColor = radiancePathTracer(Tray(result.pos (),dir),reflectLevel - 1);
+
+            auto cosineFactor = Tvector::dotProduct (dir,result.normal ());
+            reflectColor = radiancePathTraceUni(Tray(result.pos (),dir),reflectLevel - 1) * material->BRDF (ray.direction ().negatived (),dir,result.normal ())*cosineFactor;
         }
             break;
         }
         return emissionColor + material->selfColor () * reflectColor * material->reflectiveness ();
     }
     return Tcolor(0,0,0);
+}
+
+void TrayTracer::getPath(Tray fromRay, int reflectLevel, std::vector<Tvector> *verticesList)
+{
+     if(reflectLevel <=0) return;
+     auto result = scene()->intersect(fromRay);
+     if(result.geometry ())
+     {
+         //add this surface position to vertices list.
+         verticesList->push_back (result.pos ());
+         auto material = result.geometry ()->material ();
+         switch(material->getType ())
+         {
+         case Tmaterial::MaterialType::Mirror://ideal specular object.
+         {
+             auto reflectVec = reflect(fromRay.direction (),result.normal ());
+             auto reflectRay = Tray(result.pos (),reflectVec);
+             getPath(reflectRay,reflectLevel -1 ,verticesList);
+         }
+             break;
+         case Tmaterial::MaterialType::Light://ideal emission object.
+         {
+         }
+             break;
+         case Tmaterial::MaterialType::BlinnPhong:
+         {
+
+         }
+             break;
+         case Tmaterial::MaterialType::Diffuse:
+         {
+             Tvector nl;
+             if(Tvector::dotProduct (result.normal (),fromRay.direction ())<0)
+             {
+                 nl = result.normal ();
+             }else
+             {
+                 nl = result.normal ().negatived();
+             }
+
+             double r1=2*TbaseMath::PI*TbaseMath::randF ();
+             double r2=TbaseMath::randF ();
+             double r2s=sqrt(r2);
+             Tvector w=nl;
+             Tvector u;
+             if(fabs(w.x())>0.1)
+             {
+                 u = Tvector(0,1,0);
+             }else
+             {
+                 u = Tvector(1,0,0);
+             }
+             u = Tvector::crossProduct (u,w);
+             u.normalize ();
+             Tvector v=Tvector::crossProduct (w,u);
+             Tvector dir = (u*cos(r1)*r2s + v*sin(r1)*r2s + w*sqrt(1-r2)).normalized();
+             getPath(Tray(result.pos (),dir),reflectLevel -1 ,verticesList);
+         }
+             break;
+         }
+     }
+}
+
+Tcolor TrayTracer::radiancePathTraceBi(Tray ray, std::vector<Tvector> *path)
+{
+    auto result = scene()->intersect(ray);
+    path->erase (path->begin ());//remove first.
+    if(result.geometry ())
+    {
+        auto material = result.geometry ()->material ();
+        if(path->size () >1)
+        {
+            Tvector reflectDir = path->at (1) - result.pos ();
+            reflectDir.normalize ();
+            Tray reflectRay(result.pos (),reflectDir);
+            return  material->sampleSelfColor ()*material->emission ()+ material->sampleSelfColor () * radiancePathTraceBi(reflectRay,path)*material->BRDF (ray.direction ().negatived (),reflectRay.direction (),result.normal ());
+        }
+        else
+        {
+            return material->sampleSelfColor () * material->emission ();
+        }
+    }
+}
+
+void TrayTracer::concatEyeAndLight(std::vector<Tvector> *eye, std::vector<Tvector> *light)
+{
+
+    std::vector <Tvector> tmp;
+    for(int i =0;i<eye->size ();i++)
+    {
+        tmp.push_back (eye->at(i));
+        for(int j =0;j<light->size();j++)
+        {
+            Tray ray(light->at(j),eye->at(i) - light->at(j));
+            auto result = scene ()->intersect (ray);
+            if(!result.geometry ())//can arrive?
+            {
+                for(int k = j; k>=0;k--)//merge the light path and eye path
+                {
+                    tmp.push_back (light->at(k));
+                }
+                goto FINISH;
+            }
+        }
+    }
+FINISH:
+    eye->clear ();
+    for(int i =0;i<tmp.size ();i++)
+    {
+        eye->push_back (tmp[i]);
+    }
 }
 
 
